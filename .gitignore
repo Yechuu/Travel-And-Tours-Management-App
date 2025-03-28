@@ -1,0 +1,27 @@
+# Python bytecode
+*.pyc
+__pycache__/
+
+# Django files
+*.log
+*.pot
+*.pyc
+*.db
+*.sqlite3
+
+# Media files (user-uploaded content)
+media/
+
+# Virtual environment
+venv/
+.env/
+
+# Django migrations (they are stored in the app's migrations folder)
+migrations/
+
+# IDE files (if you're using any IDE, e.g., PyCharm, VSCode)
+.idea/
+.vscode/
+
+# Local configuration files (settings specific to an individual machine)
+*.env
