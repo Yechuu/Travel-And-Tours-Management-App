@@ -1,78 +1,28 @@
-# from rest_framework import serializers
-# from django.contrib.auth import get_user_model
-# from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
-
-# User = get_user_model()
-
-# class UserSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = User
-#         fields = ('id', 'username', 'email', 'password')
-#     extra_kwargs = {'password': {'write_only': True}}
-
-# class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
-#     @classmethod
-#     def get_token(cls, user):
-#         token = super().get_token(user)
-#         # Add custom claims
-#         token['username'] = user.username
-#         return token
-
 from rest_framework import serializers
 from .models import User
-from django.contrib import auth
-from rest_framework.exceptions import AuthenticationFailed
-from rest_framework_simplejwt.tokens import RefreshToken, TokenError
+import re
 
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(max_length=68, min_length=6, write_only=True)
+    
     class Meta:
         model = User
-        fields = ['email', 'username', 'password', 'is_traveller']
+        fields = ['email', 'username', 'password', 'role']
+
     def validate(self, attrs):
-        email = attrs.get('email', '')
+
+        username_pattern = re.compile(r'^[a-zA-Z][\w]{6,23}')
+        password_pattern = re.compile(r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$')
+       
         username = attrs.get('username', '')
-        if not username.isalnum():
-            raise serializers.ValidationError(
-                self.default_error_messages)
+        password = attrs.get('password', '')
+
+        if not username_pattern.search(username):
+            raise serializers.ValidationError(detail="Username must start with alphabet character and must be a length between 6 and 24 characters")
+        if not password_pattern.search(password):
+            raise serializers.ValidationError(detail="Password must be at least 8 characters long and must include at least an uppercase letter, a lowercase letters, a number, and a special character")
+        
         return attrs
+    
     def create(self, validated_data):
         return User.objects.create_user(**validated_data)
-
-class LoginSerializer(serializers.ModelSerializer):
-    password = serializers.CharField(max_length=68, min_length=6,write_only=True)
-    username = serializers.CharField(max_length=255, min_length=3)
-    tokens = serializers.SerializerMethodField()
-    def get_tokens(self, obj):
-        user = User.objects.get(username=obj['username'])
-        return {
-            'refresh': user.tokens()['refresh'],
-            'access': user.tokens()['access']
-        }
-    class Meta:
-        model = User
-        fields = ['password','username','tokens']
-    def validate(self, attrs):
-        username = attrs.get('username','')
-        password = attrs.get('password','')
-        user = auth.authenticate(username=username,password=password)
-        if not user:
-            raise AuthenticationFailed('Invalid credentials, try again')
-        if not user.is_active:
-            raise AuthenticationFailed('Account disabled, contact admin')
-        return {
-            'email': user.email,
-            'username': user.username,
-            'tokens': user.tokens
-        }
-
-class LogoutSerializer(serializers.Serializer):
-    refresh = serializers.CharField()
-    def validate(self, attrs):
-        self.token = attrs['refresh']
-        return attrs
-    def save(self, **kwargs):
-        try:
-            RefreshToken(self.token).blacklist()
-        except TokenError:
-            self.fail('bad_token')
