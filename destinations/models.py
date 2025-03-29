@@ -10,16 +10,10 @@ class Package(models.Model):
     duration = models.CharField(max_length=50,null=False, blank=False)
     available_dates = models.TextField(null=False, blank=False)
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='user_destinations')
+    
+    is_custom = models.BooleanField(default=False , null=False, blank=False)
     created_at = models.DateTimeField(auto_now_add=True, null=False, blank=False)
     updated_at = models.DateTimeField(auto_now=True, null=False, blank=False)
-
-    class Meta:
-        constraints = [
-            models.UniqueConstraint(
-                fields=['destination', 'name'],
-                name='unique_package_name_per_destination'
-            )
-        ]
 
     def __str__(self):
         return self.name
@@ -64,19 +58,12 @@ class Itinerary(models.Model):
     description = models.TextField(max_length=3000, null=False, blank=False) 
     day_interval = models.PositiveIntegerField(validators=[MinValueValidator(1)], default=1, null=False, blank=False) 
     order = models.PositiveIntegerField(default=0, null=False, blank=False) 
-    locations = models.ManyToManyField(Location, related_name='location_itineraries', null=False, blank=False)
+    locations = models.ManyToManyField(Location, related_name='location_itineraries')
     package = models.ForeignKey(Package, on_delete=models.CASCADE, related_name='package_itineraries', null=False, blank=False)
-    accommodation = models.OneToOneField(Hotel, on_delete=models.CASCADE, related_name='accommodation_itinerary', null=False, blank=False)
+    accommodation = models.ForeignKey(Hotel, on_delete=models.CASCADE, related_name='accommodation_itinerary', null=False, blank=False)
     order = models.IntegerField(default=0, null=False, blank=False)
     meals = models.CharField(max_length=255, null=False, blank=False)
-    class Meta:
-        constraints = [
-            models.UniqueConstraint(
-                fields=['package', 'day_number'],
-                name='unique_day_number_per_package'
-            )
-        ]
-
+   
     def __str__(self):
         return f"Day {self.day_number} - {self.title}"
     
@@ -94,10 +81,12 @@ class Flight(models.Model):
 
 class Booking(models.Model):
 
-    customer = models.ForeignKey(settings.AUTH_USER_MODEL, max_length=255, null=False, blank=False, related_name='customer_bookings')
-    package = models.OneToOneField(Package, on_delete=models.CASCADE, null=False, blank=False)
-    departure_datetime = models.DateTimeField(auto_now_add=True ,null=False, blank=False)
-    arrival_datetime = models.DateTimeField(auto_now_add=True ,null=False, blank=False)
+    customer = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=False, blank=False, related_name='customer_bookings')
+    package = models.OneToOneField(Package, on_delete=models.CASCADE, null=False, blank=False, related_name='package_bookings')
+    flight = models.ForeignKey(Flight, on_delete=models.CASCADE, null=False, blank=False, related_name='flight_bookings')
+
+    created_at = models.DateTimeField(auto_now_add=True, null=False, blank=False)
+    updated_at = models.DateTimeField(auto_now=True, null=False, blank=False)
     
     def __str__(self):
         return f"{self.customer.username} - {self.package.name}"
