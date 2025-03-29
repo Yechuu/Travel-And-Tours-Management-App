@@ -1,29 +1,29 @@
 from rest_framework import generics, permissions
 from .models import Destination, Location, Package, Itinerary, Hotel
 from .serializers import DestinationSerializer, LocationSerializer, PackageSerializer, ItinerarySerializer, HotelSerializer
-
-class DestinationListCreateView(generics.ListCreateAPIView):
-    queryset = Destination.objects.all()
-    serializer_class = DestinationSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-
-    def perform_create(self, serializer):
-        serializer.save(created_by=self.request.user)
-
-class DestinationRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Destination.objects.all()
-    serializer_class = DestinationSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+from accounts.permissions import IsAuthenticatedOrReadOnlyAgent
 
 class LocationListCreateView(generics.ListCreateAPIView):
     queryset = Location.objects.all()
     serializer_class = LocationSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    permission_classes = [IsAuthenticatedOrReadOnlyAgent]
 
 class LocationRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Location.objects.all()
     serializer_class = LocationSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    permission_classes = [IsAuthenticatedOrReadOnlyAgent]
+
+
+    
+class DestinationListCreateView(generics.ListCreateAPIView):
+    queryset = Destination.objects.all()
+    serializer_class = DestinationSerializer
+    permission_classes = [IsAuthenticatedOrReadOnlyAgent]
+
+class DestinationRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Destination.objects.all()
+    serializer_class = DestinationSerializer
+    permission_classes = [IsAuthenticatedOrReadOnlyAgent]
 
 class LocationListByDestinationView(generics.ListAPIView):
     serializer_class = LocationSerializer
@@ -31,17 +31,21 @@ class LocationListByDestinationView(generics.ListAPIView):
 
     def get_queryset(self):
         destination_id = self.kwargs['destination_id']
-        return Location.objects.filter(destination_id=destination_id)
+
+        return Destination.objects.get(id = destination_id).locations.all()
 
 class PackageListCreateView(generics.ListCreateAPIView):
     queryset = Package.objects.all()
     serializer_class = PackageSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    permission_classes = [IsAuthenticatedOrReadOnlyAgent]
+
+    def perform_create(self, serializer):
+        serializer.save(created_by=self.request.user)
 
 class PackageRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Package.objects.all()
     serializer_class = PackageSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    permission_classes = [IsAuthenticatedOrReadOnlyAgent]
 
 class PackageListByLocationView(generics.ListAPIView):
     serializer_class = PackageSerializer

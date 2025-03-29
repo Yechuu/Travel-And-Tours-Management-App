@@ -1,12 +1,12 @@
 from django.urls import path
-from .views import DestinationListCreateView, DestinationRetrieveUpdateDestroyView, LocationListCreateView, LocationRetrieveUpdateDestroyView, LocationListByDestinationView, PackageListByLocationView, PackageListCreateView, PackageRetrieveUpdateDestroyView, ItineraryListCreateView, ItineraryRetrieveUpdateDestroyView, ItineraryListByPackageView, HotelListCreateView, HotelRetrieveUpdateDestroyView
+from .views import DestinationListCreateView, DestinationRetrieveUpdateDestroyView, LocationListCreateView, LocationListByDestinationView, LocationRetrieveUpdateDestroyView, PackageListByLocationView, PackageListCreateView, PackageRetrieveUpdateDestroyView, ItineraryListCreateView, ItineraryRetrieveUpdateDestroyView, ItineraryListByPackageView, HotelListCreateView, HotelRetrieveUpdateDestroyView
 
 urlpatterns = [
+    path('locations/', LocationListCreateView.as_view(), name='location-list-create'),
+    path('locations/<int:pk>/', LocationRetrieveUpdateDestroyView.as_view(), name='location-retrieve-update-destroy'),
     path('destinations/', DestinationListCreateView.as_view(), name='destination-list-create'),
     path('destinations/<int:pk>/', DestinationRetrieveUpdateDestroyView.as_view(), name='destination-retrieve-update-destroy'),
     path('destinations/<int:destination_id>/locations/', LocationListByDestinationView.as_view(), name='location-list-by-destination'),
-    path('locations/', LocationListCreateView.as_view(), name='location-list-create'),
-    path('locations/<int:pk>/', LocationRetrieveUpdateDestroyView.as_view(), name='location-retrieve-update-destroy'),
      path('packages/', PackageListCreateView.as_view(), name='package-list-create'),
     path('packages/<int:pk>/', PackageRetrieveUpdateDestroyView.as_view(), name='package-retrieve-update-destroy'),
 

@@ -1,52 +1,47 @@
 from rest_framework import serializers
 from .models import Destination, Location, Package, Itinerary, Hotel
 
-class DestinationSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Destination
-        fields = ['id', 'name', 'description', 'image_url', 'created_by', 'created_at', 'updated_at']
-        read_only_fields = ['id', 'created_by', 'created_at', 'updated_at']
-    def validate_name(self, value):
-        # Check if a destination with the same name already exists
-        if Destination.objects.filter(name=value).exists():
-            raise serializers.ValidationError("A destination with this name already exists.")
-        return value
-
 class LocationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Location
-        fields = ['id', 'name', 'description', 'image_url', 'destination', 'created_at', 'updated_at']
+        fields = ['id', 'name', 'description', 'image', 'created_at', 'updated_at']
         read_only_fields = ['id', 'created_at', 'updated_at']
 
-    def validate(self, data):
-        # Ensure the destination is provided when using the individual URL
-        if 'destination' not in data and not self.context.get('destination'):
-            raise serializers.ValidationError("Destination is required.")
+class DestinationSerializer(serializers.ModelSerializer):
 
-        # Ensure the name is unique for the given destination
-        destination = data.get('destination', self.context.get('destination'))
-        name = data.get('name')
-        if Location.objects.filter(destination=destination, name=name).exists():
-            raise serializers.ValidationError("A location with this name already exists for the destination.")
-        return data
+    locations = serializers.PrimaryKeyRelatedField(queryset=Location.objects.all(), many=True)
+
+
+    class Meta:
+        model = Destination
+        fields = ['id', 'name', 'description', 'locations', 'image', 'created_by', 'created_at', 'updated_at']
+        read_only_fields = ['id', 'created_by', 'created_at', 'updated_at']
+
+    def to_representation(self, instance):
+        repr =  super().to_representation(instance)
+
+        repr.pop('locations', None)
+        
+        return repr
+
 
 class PackageSerializer(serializers.ModelSerializer):
     class Meta:
         model = Package
-        fields = ['id', 'name', 'description', 'price', 'duration', 'available_dates', 'location', 'created_at', 'updated_at']
+        fields = ['id', 'name', 'description', 'price', 'duration', 'available_dates', 'destination', 'created_at', 'updated_at']
         read_only_fields = ['id', 'created_at', 'updated_at']
 
-    def validate(self, data):
-        # Ensure the location is provided
-        if 'location' not in data:
-            raise serializers.ValidationError("Location is required.")
+    # def validate(self, data):
+    #     # Ensure the location is provided
+    #     if 'location' not in data:
+    #         raise serializers.ValidationError("Location is required.")
 
-        # Ensure the name is unique for the given location
-        location = data['location']
-        name = data.get('name')
-        if Package.objects.filter(location=location, name=name).exists():
-            raise serializers.ValidationError("A package with this name already exists for the location.")
-        return data
+    #     # Ensure the name is unique for the given location
+    #     location = data['location']
+    #     name = data.get('name')
+    #     if Package.objects.filter(location=location, name=name).exists():
+    #         raise serializers.ValidationError("A package with this name already exists for the location.")
+    #     return data
 
 class ItinerarySerializer(serializers.ModelSerializer):
     class Meta:
