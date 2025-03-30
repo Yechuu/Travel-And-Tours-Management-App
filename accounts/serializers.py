@@ -26,3 +26,35 @@ class RegisterSerializer(serializers.ModelSerializer):
     
     def create(self, validated_data):
         return User.objects.create_user(**validated_data)
+    
+
+class UserSerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        model = User
+        fields = ['id', 'email', 'username', 'role']
+        read_only_fields = ['id']
+
+
+class ProfileSerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        model = User
+        fields = ['id', 'email', 'username', 'password', 'role']
+        read_only_fields = ['id']
+
+
+    def update(self, instance, validated_data):
+
+        password = validated_data.pop("password")
+
+        instance.set_password(password)
+
+        return super().update(instance, validated_data)
+
+    def to_representation(self, instance):
+        rep =  super().to_representation(instance)
+
+        rep.pop("password")
+
+        return rep
