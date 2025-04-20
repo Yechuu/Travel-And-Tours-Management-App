@@ -26,3 +26,7 @@ migrations/
 
 # Local configuration files (settings specific to an individual machine)
 *.env
+
+/frontend/node_modules
+/frontend/build
+/frontend/coverage
