@@ -1,7 +1,7 @@
 from django.db import models
 from django.conf import settings  # Add this import
 import os
-
+from decimal import Decimal
  
     
 class Destination(models.Model):
@@ -45,8 +45,10 @@ class Location(models.Model):
 class Package(models.Model):
     name = models.CharField(max_length=255, null=False, blank=False)
     description = models.TextField(null=False, blank=False)
+    image = models.ImageField(upload_to="uploads", null=False, blank=False)
     destination = models.ForeignKey(Destination, on_delete=models.CASCADE, related_name='destination_packages', null=False, blank=False)
     price = models.DecimalField(max_digits=10, decimal_places=2, null=False, blank=False)
+    afterDiscount = models.DecimalField(max_digits=10, decimal_places=2, null=False, blank=False)
     duration = models.CharField(max_length=50,null=False, blank=False)
     available_dates = models.TextField(null=False, blank=False)
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='user_destinations')
@@ -64,7 +66,7 @@ class Package(models.Model):
 class Hotel(models.Model):
     name = models.CharField(max_length=255, unique=True, null=False, blank=False)
     description = models.TextField(max_length=3000, null=False, blank=False)
-    image = models.ImageField(upload_to="uploads", null=False, blank=False)
+    image = models.ImageField(upload_to="uploads", null=True, blank=False)
     location = models.ForeignKey(Location, on_delete=models.CASCADE, related_name='location_hotels', null=False, blank=False)
     created_at = models.DateTimeField(auto_now_add=True, null=False, blank=False)
     updated_at = models.DateTimeField(auto_now=True, null=False, blank=False)
@@ -88,7 +90,7 @@ class Itinerary(models.Model):
     description = models.TextField(max_length=3000, null=False, blank=False) 
     day_interval = models.PositiveIntegerField(default=1, null=False, blank=False) 
     order = models.PositiveIntegerField(default=0, null=False, blank=False) 
-    locations = models.ManyToManyField(Location, related_name='location_itineraries')
+    # locations = models.ManyToManyField(Location, related_name='location_itineraries')
     package = models.ForeignKey(Package, on_delete=models.CASCADE, related_name='package_itineraries', null=False, blank=False)
     accommodation = models.ForeignKey(Hotel, on_delete=models.DO_NOTHING, related_name='accommodation_itineraries', null=True, blank=True)
     meals = models.CharField(max_length=255, null=False, blank=False)

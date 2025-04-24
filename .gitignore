@@ -26,7 +26,8 @@ migrations/
 
 # Local configuration files (settings specific to an individual machine)
 *.env
-
+script.sh
 frontend/node_modules
 frontend/imp_file
 frontend/.gitignore
+penv/
