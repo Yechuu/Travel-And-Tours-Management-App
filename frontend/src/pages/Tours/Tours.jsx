@@ -1,10 +1,12 @@
-import React, { useState,useEffect } from "react";
+import React, { useState,useEffect, useContext } from "react";
 import Breadcrumbs from "../../components/Breadcrumbs/Breadcrumbs";
 import { Container, Row, Col, Offcanvas } from "react-bootstrap";
 import PopularCard from "../../components/Cards/PopularCard";
 import { popularsData } from "../../utils/data";
 import Filters from "./Filters";
 import "../Tours/tour.css";
+import { useNavigate } from "react-router-dom";
+import { AuthContext } from "../../auth/AuthContext";
 
 const Tours = () => {
   const [show, setShow] = useState(false);
@@ -16,6 +18,8 @@ const Tours = () => {
     document.title = " Tours   ";
     window.scroll(0, 0);
   }, []);
+
+    
   return (
     <>
       <Breadcrumbs title="Tours" pagename="Tours" />

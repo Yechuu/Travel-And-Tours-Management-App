@@ -11,20 +11,43 @@ export default function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+  //   try {
+  //     const res = await fetch("http://localhost:8000/api/account/auth/login/", {
+  //       method: "POST",
+  //       headers: { "Content-Type": "application/json" },
+  //       body: JSON.stringify({ username, password }),
+  //     });
+  //     const data = await res.json();
+  //     if (res.ok) {
+  //       console.log(data.access)
+  //       localStorage.setItem("token", data.access);
+  //       login(() => navigate("/"));
+  //     } else {
+  //       alert(data.message);
+  //     }
+  //   } catch {
+  //     alert("Login failed");
+  //   }
+  // };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch("http://localhost:5000/login", {
+      const res = await fetch("http://localhost:8000/api/account/auth/login/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, password }),
       });
       const data = await res.json();
       if (res.ok) {
-        localStorage.setItem("token", data.token);
-        login(() => navigate("/inside"));
+        login(() => navigate("/"), {
+          access: data.access,
+          refresh: data.refresh
+        });
       } else {
-        alert(data.message);
+        alert(data.message || "Login failed");
       }
     } catch {
       alert("Login failed");

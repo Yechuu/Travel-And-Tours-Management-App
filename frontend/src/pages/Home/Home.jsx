@@ -1,9 +1,9 @@
-import React from "react";
+import React, { useContext, useState, useEffect } from "react";
 import Banner from "../../components/Banner/Banner";
 import AdvanceSearch from "../../components/AdvanceSearch/AdvanceSearch";
 import Features from "../../components/Features/Features";
 import { Container, Row, Col,  } from "react-bootstrap";
-
+import { useNavigate } from "react-router-dom";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
@@ -15,9 +15,193 @@ import Gallery from "../../components/Gallery/Gallery";
 import Cards from "../../components/Cards/Cards";
 import { destinationsData, popularsData } from "../../utils/data";
 import PopularCard from "../../components/Cards/PopularCard";
+import { AuthContext } from "../../auth/AuthContext";
 
 
 const Home = () => {
+  // const {accessToken} = useContext(AuthContext)
+  // const [destination, setDestination] = useState(null);
+
+  // useEffect(() => {
+  //   console.log("Access Token", accessToken)
+  //   if (!accessToken) return; // wait for token to be available
+
+  //   const fetchDestination = async () => {
+  //     try {
+  //       const response = await fetch('http://localhost:8000/api/destinations', {
+  //         headers: {
+  //           Authorization: `Bearer ${accessToken}`,
+  //         },
+  //       });
+
+  //       if (!response.ok) {
+  //         throw new Error(`HTTP error! status: ${response.status}`);
+  //       }
+
+  //       const result = await response.json();
+  //       console.log(result)
+  //       setDestination(result);
+  //     } catch (error) {
+  //       console.error('Error fetching data:', error);
+  //     }
+  //   };
+
+  //   fetchDestination();
+  // }, [accessToken]); // re-run effect if token changes
+  // const { isAuthenticated, accessToken, logout, refreshAuthToken } = useContext(AuthContext);
+  // const navigate = useNavigate();
+  // const [destination, setDestination] = useState([]);
+  // const [popular, setPopular] = useState([]);
+
+
+  // useEffect(() => {
+  //   if (!isAuthenticated) {
+  //     navigate('/login');
+  //     return;
+  //   }
+
+  //   const fetchDataWithAuth = async () => {
+  //     try {
+  //       let token = accessToken;
+  //       let response = await fetch('http://localhost:8000/api/destinations', {
+  //         headers: {
+  //           Authorization: `Bearer ${token}`,
+  //         },
+  //       });
+
+  //       // If unauthorized, try to refresh token once
+  //       if (response.status === 401) {
+  //         const newToken = await refreshAuthToken();
+  //         if (newToken) {
+  //           response = await fetch('http://localhost:8000/api/destinations', {
+  //             headers: {
+  //               Authorization: `Bearer ${newToken}`,
+  //             },
+  //           });
+  //         } else {
+  //           throw new Error('Token refresh failed');
+  //         }
+  //       }
+
+  //       if (!response.ok) {
+  //         throw new Error(`HTTP error! status: ${response.status}`);
+  //       }
+
+  //       const result = await response.json();
+  //       setDestination(result);
+  //     } catch (error) {
+  //       console.error('Error fetching data:', error);
+  //       logout(() => navigate('/login'));
+  //     }
+  //   };
+
+  //   const fetchPackages = async () => {
+  //     try {
+  //       let token = accessToken;
+  //       let response = await fetch('http://localhost:8000/api/packages', {
+  //         headers: {
+  //           Authorization: `Bearer ${token}`,
+  //         },
+  //       });
+
+  //       // If unauthorized, try to refresh token once
+  //       if (response.status === 401) {
+  //         const newToken = await refreshAuthToken();
+  //         if (newToken) {
+  //           response = await fetch('http://localhost:8000/api/packages', {
+  //             headers: {
+  //               Authorization: `Bearer ${newToken}`,
+  //             },
+  //           });
+  //         } else {
+  //           throw new Error('Token refresh failed');
+  //         }
+  //       }
+
+  //       if (!response.ok) {
+  //         throw new Error(`HTTP error! status: ${response.status}`);
+  //       }
+
+  //       const result = await response.json();
+  //       setPopular(result);
+  //       console.log(popular)
+  //     } catch (error) {
+  //       console.error('Error fetching data:', error);
+  //       logout(() => navigate('/login'));
+  //     }
+  //   };
+
+  //   fetchDataWithAuth();
+  //   fetchPackages()
+  // }, [accessToken, isAuthenticated, navigate, logout, refreshAuthToken]);
+
+
+
+  // if (!isAuthenticated) {
+  //   return null; // or loading spinner
+  // }
+
+
+  const { isAuthenticated, accessToken, logout, refreshAuthToken } = useContext(AuthContext);
+const navigate = useNavigate();
+const [destination, setDestination] = useState([]);
+const [popular, setPopular] = useState([]);
+
+const fetchWithAuth = async (url) => {
+  let token = accessToken;
+  let response = await fetch(url, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  // If unauthorized, try to refresh token once
+  if (response.status === 401) {
+    const newToken = await refreshAuthToken();
+    if (!newToken) {
+      throw new Error('Token refresh failed');
+    }
+    response = await fetch(url, {
+      headers: {
+        Authorization: `Bearer ${newToken}`,
+      },
+    });
+  }
+
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+
+  return await response.json();
+};
+
+const fetchData = async () => {
+  try {
+    const [destinations, packages] = await Promise.all([
+      fetchWithAuth('http://localhost:8000/api/destinations'),
+      fetchWithAuth('http://localhost:8000/api/packages')
+    ]);
+    
+    setDestination(destinations);
+    setPopular(packages);
+  } catch (error) {
+    console.error('Error fetching data:', error);
+    logout(() => navigate('/login'));
+  }
+};
+
+useEffect(() => {
+  if (!isAuthenticated) {
+    navigate('/login');
+    return;
+  }
+  fetchData();
+}, [accessToken, isAuthenticated, navigate, logout, refreshAuthToken]);
+
+if (!isAuthenticated) {
+  return null; // or loading spinner
+}
+
   var settings = {
     dots: false,
     infinite: true,
@@ -90,8 +274,8 @@ const Home = () => {
           <Row>
             <Col md="12">
               <Slider {...settings}>
-                {destinationsData.map((destination, inx) => {
-                  return (
+                {destination?.map((destination, inx) => {
+                  return ( 
                     <Cards destination={destination} key={inx} />
                   );
                 })}
@@ -113,7 +297,7 @@ const Home = () => {
           </Col>
         </Row>
         <Row>
-        {popularsData.map((val, inx)=>{
+        {popular.map((val, inx)=>{
           return(
           <Col  md={3} sm={6} xs={12} className="mb-5" key={inx}>
             <PopularCard val={val} />

@@ -14,10 +14,11 @@ import PhotoGallery from "./pages/PhotoGallery/PhotoGallery";
 import SignUp from './pages/SignUp/SignUp'
 import Login from './pages/Login/Login'
 import { AuthProvider } from "./auth/AuthContext";
+
 function App() {
   return (
     <AuthProvider>
-      {/* <Header /> */}
+      <Header />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="about-us" element={<About />} />
