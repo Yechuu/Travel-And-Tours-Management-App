@@ -6,16 +6,17 @@ import { Link, useNavigate} from 'react-router-dom';
 function SignUp() {
     const navigate = useNavigate();
     const [username, setUsername] = useState("");
-    const [password, setPassword] = useState("");
+    const [password, setPassword] = useState("")
+    const [email, setEmail] = useState("");
     const [role, setRole] = useState("");
 
     const handleSignup = async (e) => {
       e.preventDefault();
       try {
-        const res = await fetch("http://localhost:5000/signup", {
+        const res = await fetch("http://localhost:8000/api/account/auth/signup/", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ username, password }),
+          body: JSON.stringify({ email, username, password, role }),
         });
         const data = await res.json();
         if (res.ok) {
@@ -25,13 +26,16 @@ function SignUp() {
           alert(data.message);
         }
       } catch (err) {
-        alert("Signup failed");
+        console.log(err)
+        alert(err)
+        // alert("Signup failed");
       }
     };
   
     return (
       <form onSubmit={handleSignup}>
         <h2>Signup</h2>
+        <input placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
         <input placeholder="Username" value={username} onChange={(e) => setUsername(e.target.value)} />
         <input placeholder="Password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
         <div>

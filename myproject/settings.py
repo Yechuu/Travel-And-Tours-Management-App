@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     # Apps
     'accounts',
     'destinations',
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
@@ -60,7 +61,16 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.CommonMiddleware',
 ]
+
+CORS_ALLOW_ALL_ORIGINS = True  # Not recommended for production
+
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",
+]
+
 
 ROOT_URLCONF = 'myproject.urls'
 
@@ -86,12 +96,12 @@ WSGI_APPLICATION = 'myproject.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
-#     }
-# }
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
+}
 
 
 # Password validation
@@ -185,16 +195,16 @@ SIMPLE_JWT = {
 
 AUTH_USER_MODEL = 'accounts.User'
 
-DATABASES = {
-    'default': {
-        'ENGINE': config('DB_ENGINE'),  # Read from the .env file
-        'NAME': config('DB_NAME'),  # Read from the .env file
-        'USER': config('DB_USER'),  # Read from the .env file
-        'PASSWORD': config('DB_PASSWORD'),  # Read from the .env file
-        'HOST': config('DB_HOST', default='localhost'),  # Read from the .env file
-        'PORT': config('DB_PORT', default='3306'),  # Read from the .env file
-        'OPTIONS': {
-            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",  # Ensure strict mode
-        },
-    }
-}
+# DATABASES = {
+#     'default': {
+#         'ENGINE': config('DB_ENGINE'),  # Read from the .env file
+#         'NAME': config('DB_NAME'),  # Read from the .env file
+#         'USER': config('DB_USER'),  # Read from the .env file
+#         'PASSWORD': config('DB_PASSWORD'),  # Read from the .env file
+#         'HOST': config('DB_HOST', default='localhost'),  # Read from the .env file
+#         'PORT': config('DB_PORT', default='3306'),  # Read from the .env file
+#         'OPTIONS': {
+#             'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",  # Ensure strict mode
+#         },
+#     }
+# }

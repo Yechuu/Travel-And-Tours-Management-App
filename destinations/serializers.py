@@ -16,7 +16,7 @@ class LocationSerializer(serializers.ModelSerializer):
 class PackageSerializer(serializers.ModelSerializer):
     class Meta:
         model = Package
-        fields = ['id', 'name', 'description', 'price', 'duration', 'available_dates', 'destination', 'created_by', 'created_at', 'updated_at']
+        fields = ['id', 'name', 'description','image', 'price', 'afterDiscount', 'duration', 'available_dates', 'destination', 'created_by', 'created_at', 'updated_at']
         read_only_fields = ['id', 'created_by', 'created_at', 'updated_at']
 
 class HotelSerializer(serializers.ModelSerializer):
@@ -29,18 +29,18 @@ class ItinerarySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Itinerary
-        fields = ['id', 'package', 'day_interval', 'order', 'locations', 'title', 'description', 'meals', 'accommodation', 'created_at', 'updated_at']
+        fields = ['id', 'package', 'day_interval', 'order', 'title', 'description', 'meals', 'accommodation', 'created_at', 'updated_at']
         read_only_fields = ['id', 'created_at', 'updated_at']
 
-    def to_representation(self, instance):
-        representation = super().to_representation(instance)
+    # def to_representation(self, instance):
+    #     representation = super().to_representation(instance)
 
-        ser = LocationSerializer(Location.objects.filter(id__in=representation["locations"]), many=True)
-        representation["locations"] = ser.data
-        ser = HotelSerializer(Hotel.objects.get(id=representation["accommodation"]))
-        representation["accommodation"] = ser.data
+    #     ser = LocationSerializer(Location.objects.filter(id__in=representation["locations"]), many=True)
+    #     representation["locations"] = ser.data
+    #     ser = HotelSerializer(Hotel.objects.get(id=representation["accommodation"]))
+    #     representation["accommodation"] = ser.data
 
-        return representation
+    #     return representation
     
 class FlightSerializer(serializers.ModelSerializer):
 
