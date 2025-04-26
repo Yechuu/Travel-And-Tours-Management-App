@@ -26,8 +26,8 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="about-us" element={<About />} />
           <Route path="contact-us" element={<Contact />} />
-          <Route path="tours" element={<Tours />} />
-          <Route path="tour-details" element={<TourDetails />} />
+          <Route path="/tours/:destinationId" element={<Tours />} />
+          <Route path="/tour-details/:tourPackageId" element={<TourDetails />} />
           <Route path="/booking/:packageId" element={<Booking />} />
           <Route path="destinations" element={<Destinations />} />
           <Route path="gallery" element={<PhotoGallery />} />

@@ -83,13 +83,13 @@ const Header = () => {
                   {/* <NavDropdown
                     title="DESTINATION"
                     id={`offcanvasNavbarDropdown-expand-lg`} to='/destinations'
-                  > */}
+                  > 
                    
                       
-                    {/* <NavLink className="nav-link text-dark" to="/destinations" onClick={closeMenu}>
+                    <NavLink className="nav-link text-dark" to="/destinations" onClick={closeMenu}>
                     SPAIN TOURS
-                  </NavLink> */}
-                  
+                  </NavLink> 
+                   */}
                    
                   {/* </NavDropdown> */}
                   <NavLink className="nav-link" to="/gallery" onClick={closeMenu}>

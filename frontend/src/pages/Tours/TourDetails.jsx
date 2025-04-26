@@ -2,7 +2,7 @@ import React,{useEffect, useContext, useState} from "react";
 import Breadcrumbs from "../../components/Breadcrumbs/Breadcrumbs";
 import "../Tours/tour.css";
 import { tourDetails } from "../../utils/data";
-import { NavLink } from "react-router-dom";
+import { NavLink, useParams } from "react-router-dom";
 import ImageGallery from "react-image-gallery";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../../auth/AuthContext";
@@ -27,6 +27,7 @@ const TourDetails = () => {
     const [bookings, setBookings] = useState([]);
     const [flights, setFlights] = useState([])
     const [filteredBookings, setFilteredBookings] = useState([])
+    const {tourPackageId} = useParams()
   
   const fetchWithAuth = async (url) => {
     let token = accessToken;
@@ -58,10 +59,10 @@ const TourDetails = () => {
   const fetchAllData = async () => {
     try {
       const [itinerariesData, packageData, bookingsData, flights] = await Promise.all([
-        fetchWithAuth('http://localhost:8000/api/packages/1/itineraries'),
-        fetchWithAuth('http://localhost:8000/api/packages/1'),
+        fetchWithAuth(`http://localhost:8000/api/packages/${tourPackageId}/itineraries`),
+        fetchWithAuth(`http://localhost:8000/api/packages/${tourPackageId}`),
         fetchWithAuth('http://localhost:8000/api/bookings'),
-        fetchWithAuth('http://localhost:8000/api/packages/1/flights')
+        fetchWithAuth(`http://localhost:8000/api/packages/${tourPackageId}/flights`)
       ]);
   
       setItinerary(itinerariesData);
