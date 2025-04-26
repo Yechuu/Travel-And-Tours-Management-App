@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { AuthContext } from "../../auth/AuthContext";
 import { useContext } from "react";
 
@@ -41,10 +41,23 @@ export default function Login() {
         body: JSON.stringify({ username, password }),
       });
       const data = await res.json();
+
+      console.log("The data is ", data)
+
+      const res1 = await fetch("http://localhost:8000/api/account/profile/", {
+        method: "GET",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${data.access}` },
+      });
+      const data1 = await res1.json();
+      console.log("The data1 is ", data1)
       if (res.ok) {
         login(() => navigate("/"), {
           access: data.access,
-          refresh: data.refresh
+          refresh: data.refresh,
+          user: {
+            "id": data1.id,
+            "username": data1.username
+  }
         });
       } else {
         alert(data.message || "Login failed");
@@ -55,11 +68,17 @@ export default function Login() {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <h2>Login</h2>
-      <input value={username} onChange={e => setUsername(e.target.value)} placeholder="Username" />
-      <input value={password} onChange={e => setPassword(e.target.value)} placeholder="Password" type="password" />
-      <button type="submit">Login</button>
+    <div className="login_container">
+      <div className="login_wrapper">
+        <h1 className="login_title">SIGN IN</h1>
+    <form onSubmit={handleSubmit} className="login_form">
+      {/* <h2>Login</h2> */}
+      <input value={username} onChange={e => setUsername(e.target.value)} placeholder="Username" className="login_input" />
+      <input value={password} onChange={e => setPassword(e.target.value)} placeholder="Password" type="password" className="login_input" />
+      <button type="submit" className="login_button" >Login</button>
     </form>
+    <Link to='/signup'>Don't have an account ? Create now</Link>
+    </div>
+    </div>
   );
 }

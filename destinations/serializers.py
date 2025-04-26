@@ -16,7 +16,7 @@ class LocationSerializer(serializers.ModelSerializer):
 class PackageSerializer(serializers.ModelSerializer):
     class Meta:
         model = Package
-        fields = ['id', 'name', 'description','image', 'price', 'afterDiscount', 'duration', 'available_dates', 'destination', 'created_by', 'created_at', 'updated_at']
+        fields = ['id', 'name', 'description','overview', 'tour_info', 'tour_highlights', 'image', 'price', 'afterDiscount', 'duration', 'available_dates', 'destination', 'created_by', 'created_at', 'updated_at']
         read_only_fields = ['id', 'created_by', 'created_at', 'updated_at']
 
 class HotelSerializer(serializers.ModelSerializer):
