@@ -1,12 +1,132 @@
-import React, { useState,useEffect } from "react";
+import React, { useState,useEffect, useContext } from "react";
 import Breadcrumbs from "../../components/Breadcrumbs/Breadcrumbs";
 import { Col, Container, Form, Row, Card, ListGroup } from "react-bootstrap";
 import DatePicker from "react-datepicker";
 import "../Booking/booking.css"
-
+import { useParams } from 'react-router-dom';
+import { AuthContext } from "../../auth/AuthContext";
+import { useNavigate } from "react-router-dom";
 const Booking = () => {
+  const { isAuthenticated, accessToken, userId, logout, refreshAuthToken } = useContext(AuthContext);
+  const navigate = useNavigate();
+  const [flights, setFlights] = useState([]);
+  const { packageId } = useParams();
+  console.log("The package id is ", packageId)
+  console.log("The user id in Booking.jsx", userId)
+
+  const fetchWithAuth = async (url) => {
+    let token = accessToken;
+    let response = await fetch(url, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+  
+    // If unauthorized, try to refresh token once
+    if (response.status === 401) {
+      const newToken = await refreshAuthToken();
+      if (!newToken) {
+        throw new Error('Token refresh failed');
+      }
+      response = await fetch(url, {
+        headers: {
+          Authorization: `Bearer ${newToken}`,
+        },
+      });
+    }
+  
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+  
+    return await response.json();
+  };
+
+
+
+const fetchFlights = async () => {
+  try {
+    const result = await fetchWithAuth('http://localhost:8000/api/packages/1/flights');
+    setFlights(result);
+  } catch (error) {
+    console.error('Error fetching flights:', error);
+    alert(error)
+    // logout(() => navigate('/login'));
+  }
+};
+
+  const postWithAuth = async (url, body) => {
+    let token = accessToken;
+    let response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(body),
+    });
+  
+    if (response.status === 401) {
+      const newToken = await refreshAuthToken();
+      if (!newToken) throw new Error('Token refresh failed');
+  
+      response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${newToken}`,
+        },
+        body: JSON.stringify(body),
+      });
+    }
+  
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+  
+    return await response.json();
+  };
+
+  const makeBooking = async () => {
+  try {
+    const packageid = '1'
+    // const packageId = packageId; // assuming it's set correctly
+    const response = await postWithAuth('http://localhost:8000/api/bookings/', {
+      customer: userId,
+      package: packageid,
+      flight: flights.id
+    });
+
+    console.log('Booking successful:', response);
+    // Optionally navigate or show confirmation
+    // navigate('/confirmation');
+    alert('Booking successfully made!');
+  } catch (error) {
+    console.error('Error making booking:', error);
+    alert(error)
+    // logout(() => navigate('/login'));
+  }
+};
+
+const handleSubmit = (event) => {
+  event.preventDefault();
+  makeBooking();
+};
+
+ useEffect(() => {
+    if (!isAuthenticated) {
+      navigate('/login');
+      return;
+    }
+    fetchFlights();
+    // fetchBookings();
+  }, [accessToken, isAuthenticated, navigate, logout, refreshAuthToken]);
+
+    
+  
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(new Date());
+  console.log(flights)
 
   useEffect(()=>{
     document.title ="Page Name  "
@@ -25,7 +145,7 @@ const Booking = () => {
                   <h3 className="h4 font-bold m-0"> Your Details</h3>
                 </div>
 
-                <Form className="p-4">
+                <Form className="p-4" onSubmit={handleSubmit}>
                   <Row>
                     <Form.Group
                       as={Col}
@@ -114,7 +234,7 @@ const Booking = () => {
                       />
                     </Form.Group>
                     <Col md="12">
-                      <button className="primaryBtn "> Submit Now</button>
+                      <button className="primaryBtn " type="submit"> Submit Now</button>
                     </Col>
                   </Row>
                 </Form>

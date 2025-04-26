@@ -1,42 +1,3 @@
-// import React, { useState, useEffect, createContext } from "react";
-// import { useNavigate } from "react-router-dom";
-
-// export const AuthContext = createContext();
-
-// export function AuthProvider({ children }) {
-//   const [isAuthenticated, setIsAuthenticated] = useState(false);
-//   const [accessToken, setAccessToken] = useState("")
-//   const navigate=useNavigate()
-//   useEffect(() => {
-//     const token = localStorage.getItem("token");
-//     console.log("Part 2", token)
-//     if (token) {
-//       setIsAuthenticated(true)
-//       setAccessToken(token)
-//     }
-//     else {
-//       navigate('/login')
-//       setAccessToken("")
-//     }
-//   }, []);
-
-//   const login = (cb) => {
-//     setIsAuthenticated(true);
-//     cb();
-//   };
-
-//   const logout = (cb) => {
-//     localStorage.removeItem("token");
-//     setIsAuthenticated(false);
-//     cb();
-//   };
-
-//   return (
-//     <AuthContext.Provider value={{ isAuthenticated, login, logout, accessToken}}>
-//       {children}
-//     </AuthContext.Provider>
-//   );
-// }
 import React, { useState, useEffect, createContext } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -45,6 +6,7 @@ export const AuthContext = createContext();
 export function AuthProvider({ children }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [accessToken, setAccessToken] = useState("");
+  const [userId, setUserId] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -88,6 +50,8 @@ export function AuthProvider({ children }) {
     localStorage.setItem("refreshToken", tokens.refresh);
     setIsAuthenticated(true);
     setAccessToken(tokens.access);
+    console.log("Tokens is ", tokens)
+    setUserId(tokens.user.id);
     cb();
   };
 
@@ -96,6 +60,7 @@ export function AuthProvider({ children }) {
     localStorage.removeItem("refreshToken");
     setIsAuthenticated(false);
     setAccessToken("");
+    setUserId(null);
     cb();
   };
 
@@ -105,7 +70,8 @@ export function AuthProvider({ children }) {
       login, 
       logout, 
       accessToken,
-      refreshAuthToken 
+      refreshAuthToken,
+      userId
     }}>
       {children}
     </AuthContext.Provider>

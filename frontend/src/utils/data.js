@@ -274,15 +274,15 @@ export const tourDetails = {
       original: image4,
       thumbnail: image4,
     },
-    {
-      original: image5,
-      thumbnail: image5,
-    },
+    // {
+    //   original: image5,
+    //   thumbnail: image5,
+    // },
 
-    {
-      original: image6,
-      thumbnail: image6,
-    },
+    // {
+    //   original: image6,
+    //   thumbnail: image6,
+    // },
     {
       original: image7,
       thumbnail: image7,

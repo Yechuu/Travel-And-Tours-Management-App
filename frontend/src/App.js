@@ -14,25 +14,31 @@ import PhotoGallery from "./pages/PhotoGallery/PhotoGallery";
 import SignUp from './pages/SignUp/SignUp'
 import Login from './pages/Login/Login'
 import { AuthProvider } from "./auth/AuthContext";
-
+import { useLocation } from "react-router-dom";
+import MainLayout from "./auth/MainLayout";
+import AuthLayout from "./auth/AuthLayout";
 function App() {
   return (
     <AuthProvider>
-      <Header />
       <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="about-us" element={<About />} />
-        <Route path="contact-us" element={<Contact />} />
-        <Route path="tours" element={<Tours />} />
-        <Route path="tour-details" element={<TourDetails />} />
-        <Route path="booking" element={<Booking />} />
-        <Route path="destinations" element={<Destinations />} />
-        <Route path="gallery" element={<PhotoGallery />} />
-        <Route path="signup" element={<SignUp />} />
-        <Route path="login" element={<Login />} />
+        {/* Main app layout */}
+        <Route element={<MainLayout />}>
+          <Route path="/" element={<Home />} />
+          <Route path="about-us" element={<About />} />
+          <Route path="contact-us" element={<Contact />} />
+          <Route path="tours" element={<Tours />} />
+          <Route path="tour-details" element={<TourDetails />} />
+          <Route path="/booking/:packageId" element={<Booking />} />
+          <Route path="destinations" element={<Destinations />} />
+          <Route path="gallery" element={<PhotoGallery />} />
+        </Route>
 
+        {/* Auth layout (no header) */}
+        <Route element={<AuthLayout />}>
+          <Route path="signup" element={<SignUp />} />
+          <Route path="login" element={<Login />} />
+        </Route>
       </Routes>
-      {/* <Footer /> */}
     </AuthProvider>
   );
 }

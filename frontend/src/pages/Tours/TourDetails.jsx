@@ -1,10 +1,11 @@
-import React,{useEffect} from "react";
+import React,{useEffect, useContext, useState} from "react";
 import Breadcrumbs from "../../components/Breadcrumbs/Breadcrumbs";
 import "../Tours/tour.css";
 import { tourDetails } from "../../utils/data";
 import { NavLink } from "react-router-dom";
 import ImageGallery from "react-image-gallery";
-
+import { useNavigate } from "react-router-dom";
+import { AuthContext } from "../../auth/AuthContext";
 import {
   Container,
   Row,
@@ -18,15 +19,98 @@ import {
 } from "react-bootstrap";
 
 const TourDetails = () => {
+  const { isAuthenticated, accessToken, userId, logout, refreshAuthToken } = useContext(AuthContext);
+  const navigate = useNavigate();
+  const [itinerary, setItinerary] = useState([]);
+  const [destPackage, setDestPackage]=useState([]);
+  const [images, setImages] = useState([]);
+    const [bookings, setBookings] = useState([]);
+    const [flights, setFlights] = useState([])
+    const [filteredBookings, setFilteredBookings] = useState([])
+  
+  const fetchWithAuth = async (url) => {
+    let token = accessToken;
+    let response = await fetch(url, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+  
+    // If unauthorized, try to refresh token once
+    if (response.status === 401) {
+      const newToken = await refreshAuthToken();
+      if (!newToken) {
+        throw new Error('Token refresh failed');
+      }
+      response = await fetch(url, {
+        headers: {
+          Authorization: `Bearer ${newToken}`,
+        },
+      });
+    }
+  
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+  
+    return await response.json();
+  };
+  const fetchAllData = async () => {
+    try {
+      const [itinerariesData, packageData, bookingsData, flights] = await Promise.all([
+        fetchWithAuth('http://localhost:8000/api/packages/1/itineraries'),
+        fetchWithAuth('http://localhost:8000/api/packages/1'),
+        fetchWithAuth('http://localhost:8000/api/bookings'),
+        fetchWithAuth('http://localhost:8000/api/packages/1/flights')
+      ]);
+  
+      setItinerary(itinerariesData);
+      setDestPackage(packageData);
+      setImages([{ original: packageData.image, thumbnail: packageData.image }]);
+      setBookings(bookingsData);
+      setFlights(flights)
+      console.log(bookingsData)
+      
+      console.log("The user id is ", userId)
+      console.log("The package id is ", packageData.id)
+      const filter = bookingsData.filter(
+        booking => booking.customer === userId && booking.package === packageData.id
+      );
 
+      console.log("Filtered Bookings is ", filter )
+      setFilteredBookings(filter)
+
+      console.log([{ original: packageData.image, thumbnail: packageData.image }]);
+    } catch (error) {
+      console.error('Error fetching data:', error);
+      // alert(error);
+      logout(() => navigate('/login'));
+    }
+  };
+  console.log(flights)
+  
+  useEffect(() => {
+    if (!isAuthenticated) {
+      navigate('/login');
+      return;
+    }
+    fetchAllData()
+  }, [accessToken, isAuthenticated, navigate, logout, refreshAuthToken]);
+  
+
+  console.log(destPackage)
+  console.log("Bookings is ", bookings)
   useEffect(() => {
     document.title = " Tours  Details  ";
     window.scroll(0, 0);
   }, []);
+  if (!isAuthenticated) {
+    return null; // or loading spinner
+  }
   return (
     <>
       <Breadcrumbs
-        title={tourDetails.title}
+        title={destPackage?.name}
         pagename=<NavLink to="/tours">Tours</NavLink>
         childpagename={tourDetails.title}
       />
@@ -34,9 +118,9 @@ const TourDetails = () => {
       <section className="tour_details py-5">
         <Container>
           <Row>
-            <h1 className="fs-2 font-bold mb-4">{tourDetails.title} </h1>
+            <h1 className="fs-2 font-bold mb-4">{destPackage?.name} </h1>
             <ImageGallery
-              items={tourDetails.images}
+              items={images}
               showNav={false}
               showBullets={false}
               showPlayButton={false}
@@ -63,7 +147,7 @@ const TourDetails = () => {
                         </Nav.Link>
                       </Nav.Item>
                       <Nav.Item>
-                        <Nav.Link eventKey="4">Location </Nav.Link>
+                        <Nav.Link eventKey="4">Flights </Nav.Link>
                       </Nav.Item>
                     </Nav>
                   </Col>
@@ -74,11 +158,11 @@ const TourDetails = () => {
                         <h1 className="font-bold mb-2 h3 border-bottom pb-2">
                           Overview
                         </h1>
-                        <p className="body-text">{tourDetails.des}</p>
+                        <p className="body-text">{destPackage?.overview}</p>
 
-                        <h5 className="font-bold mb-2 h5  mt-3">Tour Info</h5>
+                        {/* <h5 className="font-bold mb-2 h5  mt-3">Tour Info</h5> */}
 
-                        <ListGroup>
+                        {/* <ListGroup>
                           {tourDetails.tourInfo.map((val, index) => {
                             return (
                               <ListGroup.Item
@@ -88,11 +172,11 @@ const TourDetails = () => {
                               ></ListGroup.Item>
                             );
                           })}
-                        </ListGroup>
+                        </ListGroup> */}
 
                         <h5 className="font-bold mb-2 h5  mt-3">
                           Tour highlights
-                        </h5>
+                        </h5> 
 
                         {tourDetails.highlights.map((val, index) => {
                           return (
@@ -103,7 +187,7 @@ const TourDetails = () => {
                               {val}
                             </ListGroup.Item>
                           );
-                        })}
+                        })} 
                       </div>
                     </Tab.Pane>
 
@@ -114,7 +198,7 @@ const TourDetails = () => {
                         </h1>
 
                         <Accordion defaultActiveKey="0" className="mt-4">
-                          {tourDetails.itinerary.map((val, index) => {
+                          {itinerary.map((val, index) => {
                             return (
                               <Accordion.Item
                                 eventKey={index}
@@ -124,12 +208,12 @@ const TourDetails = () => {
                                 <Accordion.Header>
                                   <h1
                                     dangerouslySetInnerHTML={{
-                                      __html: val.title,
+                                      __html: `Day ${val.day_interval} - ${val.title}`,
                                     }}
                                   ></h1>
                                 </Accordion.Header>
                                 <Accordion.Body className="body-text">
-                                  {val.des}
+                                  {val.description}
                                 </Accordion.Body>
                               </Accordion.Item>
                             );
@@ -176,17 +260,13 @@ const TourDetails = () => {
                     <Tab.Pane eventKey="4">
                       <div className="tour_details">
                         <h1 className="font-bold mb-4 h3 border-bottom pb-2">
-                          Location
+                          Flights
                         </h1>
 
-                        <iframe
-                          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1010296.398675619!2d114.41207770371561!3d-8.453560368052777!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2dd141d3e8100fa1%3A0x24910fb14b24e690!2sBali%2C%20Indonesia!5e0!3m2!1sen!2sin!4v1724581274620!5m2!1sen!2sin"
-                          width="100%"
-                          height="400px"
-                          allowFullScreen=""
-                          loading="lazy"
-                          referrerPolicy="no-referrer-when-downgrade"
-                        ></iframe>
+                        <p>Name: {flights[0]?.name}</p>
+                        <p>Arrival Time: {flights[0]?.arrival_datetime}</p>
+                        <p>Departure Time: {flights[0]?.departure_datetime}</p>
+
                       </div>
                     </Tab.Pane>
                   </Tab.Content>
@@ -198,7 +278,7 @@ const TourDetails = () => {
                       <Card.Body>
                         <Stack gap={2} direction="horizontal">
                           <h1 className="font-bold mb-0 h2">
-                            ${tourDetails.price}
+                            ${destPackage?.afterDiscount}
                           </h1>
                           <span className="fs-4"> /person</span>
                         </Stack>
@@ -227,9 +307,9 @@ const TourDetails = () => {
                           <h5 className="h6"> ({tourDetails.reviews})</h5>
                         </div>
 
-                        <NavLink to="/booking" className="primaryBtn w-100 d-flex justify-content-center fw-bold">
+                        {filteredBookings.length == 0 ? <NavLink to={`/booking/${destPackage.id}`} className="primaryBtn w-100 d-flex justify-content-center fw-bold">
                           Book Now
-                        </NavLink>
+                        </NavLink>: <p>Already booked</p> }
                       </Card.Body>
                     </Card>
 
