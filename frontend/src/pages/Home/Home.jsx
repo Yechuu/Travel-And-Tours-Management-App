@@ -82,8 +82,8 @@ if (!isAuthenticated) {
 
   var settings = {
     dots: false,
-    infinite: true,
-    autoplay: true,
+    infinite: false,
+    autoplay: false,
     slidesToShow: 4,
     slidesToScroll: 1,
 

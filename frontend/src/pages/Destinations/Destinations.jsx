@@ -1,17 +1,20 @@
-import React,{useEffect} from 'react'
+import React,{useEffect, useState, useContext} from 'react'
 import Breadcrumbs from '../../components/Breadcrumbs/Breadcrumbs'
 import { Col, Container, Row } from 'react-bootstrap'
 import { destinationsData } from '../../utils/data'
 import Cards from '../../components/Cards/Cards'
+import { useNavigate } from 'react-router-dom'
+import { AuthContext } from '../../auth/AuthContext'
 
 const Destinations = () => {
+
 
   useEffect(()=>{
     document.title =" Destinations  "
     window.scroll(0, 0)
   },[])
-
-
+  
+  // console.log(insideDestination)
   return (
     <>
         <Breadcrumbs title="Destinations" pagename="Destinations" />

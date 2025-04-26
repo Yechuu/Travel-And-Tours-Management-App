@@ -26,7 +26,7 @@ const PopularCard = ({val}) => {
 
                 </Card.Text>
 
-                <Card.Title><NavLink className="body-text text-dark text-decoration-none" to="/tour-details"> {val?.name} </NavLink></Card.Title>
+                <Card.Title><NavLink className="body-text text-dark text-decoration-none" to={`/tour-details/${val.id}`}> {val?.name} </NavLink></Card.Title>
                 <p className="reviwe">
                   <span>
                     <i className="bi bi-star-fill me-1"></i>
