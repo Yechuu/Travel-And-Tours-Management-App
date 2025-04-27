@@ -56,14 +56,15 @@ export default function Login() {
           refresh: data.refresh,
           user: {
             "id": data1.id,
-            "username": data1.username
+            "username": data1.username,
+            "role": data1.role
   }
         });
       } else {
         alert(data.message || "Login failed");
       }
     } catch {
-      alert("Login failed");
+      alert("Username or password is invalid");
     }
   };
 

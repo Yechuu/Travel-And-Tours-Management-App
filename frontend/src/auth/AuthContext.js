@@ -7,6 +7,7 @@ export function AuthProvider({ children }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [accessToken, setAccessToken] = useState("");
   const [userId, setUserId] = useState(null);
+  const [userRole, setUserRole] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -52,6 +53,7 @@ export function AuthProvider({ children }) {
     setAccessToken(tokens.access);
     console.log("Tokens is ", tokens)
     setUserId(tokens.user.id);
+    setUserRole(tokens.user.role)
     cb();
   };
 
@@ -71,7 +73,8 @@ export function AuthProvider({ children }) {
       logout, 
       accessToken,
       refreshAuthToken,
-      userId
+      userId,
+      userRole
     }}>
       {children}
     </AuthContext.Provider>

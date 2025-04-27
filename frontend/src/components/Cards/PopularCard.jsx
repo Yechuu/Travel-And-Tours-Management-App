@@ -43,8 +43,8 @@ const PopularCard = ({val}) => {
                 //     className={cat.replace(/ .*/, "") + " badge"}>{cat}</span>
                 //   )
                 // })
-                <span key={"0"} 
-                    className={"River Cruise badge"}>{"River Cruise"}</span>
+                // <span key={"0"} 
+                //     className={"River Cruise badge"}>{"River Cruise"}</span>
                 }
                 
               </Card.Body>

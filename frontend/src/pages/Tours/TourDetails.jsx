@@ -19,7 +19,7 @@ import {
 } from "react-bootstrap";
 
 const TourDetails = () => {
-  const { isAuthenticated, accessToken, userId, logout, refreshAuthToken } = useContext(AuthContext);
+  const { isAuthenticated, accessToken, userId, userRole, logout, refreshAuthToken } = useContext(AuthContext);
   const navigate = useNavigate();
   const [itinerary, setItinerary] = useState([]);
   const [destPackage, setDestPackage]=useState([]);
@@ -144,7 +144,7 @@ const TourDetails = () => {
                       <Nav.Item>
                         <Nav.Link eventKey="3">
                           {" "}
-                          Inclusions & Exclusion{" "}
+                          Tour Info{" "}
                         </Nav.Link>
                       </Nav.Item>
                       <Nav.Item>
@@ -178,7 +178,8 @@ const TourDetails = () => {
                         <h5 className="font-bold mb-2 h5  mt-3">
                           Tour highlights
                         </h5> 
-
+                        <p className="body-text">{destPackage?.tour_highlights}</p>
+{/* 
                         {tourDetails.highlights.map((val, index) => {
                           return (
                             <ListGroup.Item
@@ -188,7 +189,7 @@ const TourDetails = () => {
                               {val}
                             </ListGroup.Item>
                           );
-                        })} 
+                        })}  */}
                       </div>
                     </Tab.Pane>
 
@@ -226,10 +227,11 @@ const TourDetails = () => {
                     <Tab.Pane eventKey="3">
                       <div className="tour_details">
                         <h1 className="font-bold mb-2 h3 border-bottom pb-2">
-                          Inclusions & Exclusions
+                          Tour Info
                         </h1>
+                        <p className="body-text">{destPackage?.tour_info}</p>
 
-                        <h5 className="font-bold mb-3 h5  mt-3">Inclusion</h5>
+                        {/* <h5 className="font-bold mb-3 h5  mt-3">Inclusion</h5>
 
                         {tourDetails.included.map((val, index) => {
                           return (
@@ -255,8 +257,8 @@ const TourDetails = () => {
                               {val}
                             </ListGroup.Item>
                           );
-                        })}
-                      </div>
+                        })} */}
+                      </div> 
                     </Tab.Pane>
                     <Tab.Pane eventKey="4">
                       <div className="tour_details">
@@ -308,9 +310,24 @@ const TourDetails = () => {
                           <h5 className="h6"> ({tourDetails.reviews})</h5>
                         </div>
 
-                        {filteredBookings.length == 0 ? <NavLink to={`/booking/${destPackage.id}`} className="primaryBtn w-100 d-flex justify-content-center fw-bold">
+                        {/* {filteredBookings.length == 0 ? <NavLink to={`/booking/${destPackage.id}`} className="primaryBtn w-100 d-flex justify-content-center fw-bold">
                           Book Now
-                        </NavLink>: <p>Already booked</p> }
+                        </NavLink>: <p>Already booked</p> } */}
+                                                {userRole === 'agent' ? (
+                          <p>You are an agent. Can't book.</p>
+                        ) : (
+                          filteredBookings.length === 0 ? (
+                            <NavLink
+                              to={`/booking/${destPackage.id}`}
+                              className="primaryBtn w-100 d-flex justify-content-center fw-bold"
+                            >
+                              Book Now
+                            </NavLink>
+                          ) : (
+                            <p>Already booked</p>
+                          )
+                        )}
+
                       </Card.Body>
                     </Card>
 

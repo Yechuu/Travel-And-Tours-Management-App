@@ -95,8 +95,8 @@ class Itinerary(models.Model):
     order = models.PositiveIntegerField(default=0, null=False, blank=False) 
     # locations = models.ManyToManyField(Location, related_name='location_itineraries')
     package = models.ForeignKey(Package, on_delete=models.CASCADE, related_name='package_itineraries', null=False, blank=False)
-    accommodation = models.ForeignKey(Hotel, on_delete=models.DO_NOTHING, related_name='accommodation_itineraries', null=True, blank=True)
-    meals = models.CharField(max_length=255, null=False, blank=False)
+    # accommodation = models.ForeignKey(Hotel, on_delete=models.DO_NOTHING, related_name='accommodation_itineraries', null=True, blank=True)
+    # meals = models.CharField(max_length=255, null=False, blank=False)
     created_at = models.DateTimeField(auto_now_add=True, null=False, blank=False)
     updated_at = models.DateTimeField(auto_now=True, null=False, blank=False)
    
