@@ -295,14 +295,10 @@ export const tourDetails = {
 };
 
 export const location = [
-  "Bali",
-  "Tokyo",
-  "Bangkok",
-  "Cancun",
-  "Nha Trang",
-  "Phuket",
-  "Malaysia",
-  "Paris",
+  "Kathmandu",
+  "Pokhara",
+  "Dang",
+  "Chitwan"
 ];
 
 export const Categories = [

@@ -26,12 +26,16 @@ function SignUp() {
           alert("Signup successful");
           navigate("/login");
         } else {
-          alert(data.message);
+          const key = Object.keys(data)[0];
+        const message = data[key][0];
+
+          console.log(key, message)
+          alert(message)
         }
       } catch (err) {
-        console.log(err)
-        alert(err)
-        // alert("Signup failed");
+        // console.log(err)
+      console.log("The error is ", err)
+        alert("Signup failed");
       }
     };
   

@@ -17,6 +17,9 @@ import { AuthProvider } from "./auth/AuthContext";
 import { useLocation } from "react-router-dom";
 import MainLayout from "./auth/MainLayout";
 import AuthLayout from "./auth/AuthLayout";
+import CreateDestinationForm from "./pages/CreateDestinationForm/CreateDestinationForm";
+import CreatePackageForm from "./pages/CreatePackages/CreatePackages";
+import CreateItinerariesForm from "./pages/CreateItineraries/CreateItineraries";
 function App() {
   return (
     <AuthProvider>
@@ -31,6 +34,9 @@ function App() {
           <Route path="/booking/:packageId" element={<Booking />} />
           <Route path="destinations" element={<Destinations />} />
           <Route path="gallery" element={<PhotoGallery />} />
+          <Route path="add-destinations" element={< CreateDestinationForm/>} />
+          <Route path="add-packages" element={<CreatePackageForm />} />
+          <Route path="add-itineraries" element={<CreateItinerariesForm />} />
         </Route>
 
         {/* Auth layout (no header) */}

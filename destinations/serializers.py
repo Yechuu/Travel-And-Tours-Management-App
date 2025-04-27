@@ -29,7 +29,7 @@ class ItinerarySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Itinerary
-        fields = ['id', 'package', 'day_interval', 'order', 'title', 'description', 'meals', 'accommodation', 'created_at', 'updated_at']
+        fields = ['id', 'package', 'day_interval', 'order', 'title', 'description', 'created_at', 'updated_at']
         read_only_fields = ['id', 'created_at', 'updated_at']
 
     # def to_representation(self, instance):
