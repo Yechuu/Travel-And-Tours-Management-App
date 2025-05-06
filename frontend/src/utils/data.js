@@ -311,11 +311,12 @@ export const Categories = [
 
 export const Duration = ["1-3 Days", "3-5 Days", "5-7 Days", "7-10 Day"];
 export const PriceRange = [
-  "$ 0 - $50",
-  "$ 50 - $ 100",
-  "$ 100 - $ 200",
-  "$ 200 - ₹ $ 400",
-  "$ 400 - ₹ $ 800",
+  "Under $50",
+  "Under $100",
+  "Under $150",
+  "Under $200",
+  "Under $400",
+  "Above $400"
 ];
 
 export const Ratings = ["⭐", "⭐⭐", "⭐⭐⭐", "⭐⭐⭐⭐", "⭐⭐⭐⭐⭐"];

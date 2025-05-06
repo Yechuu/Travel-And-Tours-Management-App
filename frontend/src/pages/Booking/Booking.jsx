@@ -11,8 +11,10 @@ const Booking = () => {
   const navigate = useNavigate();
   const [flights, setFlights] = useState([]);
   const { packageId } = useParams();
-  console.log("The package id is ", packageId)
-  console.log("The user id in Booking.jsx", userId)
+  const [destPackage, setDestPackage]=useState([]);
+  
+  // console.log("The package id is ", packageId)
+  // console.log("The user id in Booking.jsx", userId)
 
   const fetchWithAuth = async (url) => {
     let token = accessToken;
@@ -42,11 +44,29 @@ const Booking = () => {
     return await response.json();
   };
 
+  const fetchPackage = async () => {
+    try {
+      const [packageData] = await Promise.all([
+        fetchWithAuth(`http://localhost:8000/api/packages/${packageId}`),
+      ]);
+  
+      setDestPackage(packageData);
+      console.log("The packagedata is ", packageData)
+      // console.log("The user id is ", userId)
+      // console.log("The package1 id is ", packageData.name)
+      
+
+    } catch (error) {
+      console.error('Error fetching data:', error);
+      // alert(error);
+      logout(() => navigate('/login'));
+    }
+  };
 
 
 const fetchFlights = async () => {
   try {
-    const result = await fetchWithAuth('http://localhost:8000/api/packages/1/flights');
+    const result = await fetchWithAuth(`http://localhost:8000/api/packages/${packageId}/flights`);
     setFlights(result);
   } catch (error) {
     console.error('Error fetching flights:', error);
@@ -89,11 +109,11 @@ const fetchFlights = async () => {
 
   const makeBooking = async () => {
   try {
-    const packageid = '1'
+    // const packageid = '1'
     // const packageId = packageId; // assuming it's set correctly
     const response = await postWithAuth('http://localhost:8000/api/bookings/', {
       customer: userId,
-      package: packageid,
+      package: packageId,
       flight: flights.id
     });
 
@@ -119,6 +139,7 @@ const handleSubmit = (event) => {
       return;
     }
     fetchFlights();
+    fetchPackage();
     // fetchBookings();
   }, [accessToken, isAuthenticated, navigate, logout, refreshAuthToken]);
 
@@ -251,24 +272,24 @@ const handleSubmit = (event) => {
                   <ListGroup>
                     <ListGroup.Item className="border-0 d-flex justify-content-between h5 pt-0">
                       <span> Base Price</span>
-                      <strong>$28,660</strong>
+                      <strong>${destPackage.price}</strong>
                     </ListGroup.Item>
                     <ListGroup.Item className="border-0 d-flex justify-content-between h5 pt-0">
                       <span> Total Discount <span className="badge bg-danger">
-                        10%
+                        {/* ${destPackage.price}  */}
                       </span></span>
-                      <strong>$20</strong>
+                      <strong>${destPackage.price - destPackage.afterDiscount}</strong>
                     </ListGroup.Item>
                     <ListGroup.Item className="border-0 d-flex justify-content-between h5 pt-0">
-                      <span> Taxes % Fees</span>
-                      <strong>$28,660</strong>
+                      {/* <span> Taxes % Fees</span> */}
+                      {/* <strong>${destPackage.afterDiscount}</strong> */}
                     </ListGroup.Item>
 
                   </ListGroup>
                 </Card.Body>
                 <Card.Footer className="d-flex justify-content-between py-4">
                   <span className="font-bold h5"> Payable Now</span>
-                  <strong className="font-bold h5">$28,660</strong>
+                  <strong className="font-bold h5">${destPackage.afterDiscount}</strong>
                 </Card.Footer>
               </Card>
             </Col>

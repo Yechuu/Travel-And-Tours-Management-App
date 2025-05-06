@@ -2,10 +2,12 @@ from rest_framework import serializers
 from .models import Destination, Location, Package, Itinerary, Hotel, Flight, Booking
 
 class DestinationSerializer(serializers.ModelSerializer):
+    created_by = serializers.ReadOnlyField(source='created_by.id')  # return user id in response
+
     class Meta:
         model = Destination
-        fields = ['id', 'name', 'description', 'image', 'created_at', 'updated_at']
-        read_only_fields = ['id', 'created_at', 'updated_at']
+        fields = ['id', 'name', 'description', 'image', 'created_at', 'updated_at', 'created_by']
+        read_only_fields = ['id', 'created_at', 'updated_at', 'created_by']
 
 class LocationSerializer(serializers.ModelSerializer):
     class Meta:

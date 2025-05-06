@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from .models import User
 import re
+from .models import EmailVerificationToken
 
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(max_length=68, min_length=6, write_only=True)
@@ -25,36 +26,50 @@ class RegisterSerializer(serializers.ModelSerializer):
         return attrs
     
     def create(self, validated_data):
-        return User.objects.create_user(**validated_data)
+        user = User.objects.create_user(
+            **validated_data,
+            is_verified=False  # Add this field for email verification
+        )
+        # Create and send verification token
+        # verification_token = EmailVerificationToken.create_token(user)
+        user.send_verification_email()
+        return user
+        # return User.objects.create_user(**validated_data)
     
 
 class UserSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = User
-        fields = ['id', 'email', 'username', 'role']
-        read_only_fields = ['id']
+        fields = ['id', 'email', 'username', 'role', 'is_verified']
+        read_only_fields = ['id', 'is_verified']
+
 
 
 class ProfileSerializer(serializers.ModelSerializer):
-    
     class Meta:
         model = User
-        fields = ['id', 'email', 'username', 'password', 'role']
-        read_only_fields = ['id']
-
+        fields = ['id', 'email', 'username', 'password', 'role', 'is_verified']
+        read_only_fields = ['id', 'is_verified']
+        extra_kwargs = {
+            'password': {'write_only': True}
+        }
 
     def update(self, instance, validated_data):
-
-        password = validated_data.pop("password")
-
-        instance.set_password(password)
-
+        password = validated_data.pop("password", None)
+        if password:
+            instance.set_password(password)
         return super().update(instance, validated_data)
 
     def to_representation(self, instance):
-        rep =  super().to_representation(instance)
-
-        rep.pop("password")
-
+        rep = super().to_representation(instance)
+        rep.pop("password", None)  # Safely remove password if it exists
         return rep
+    
+class EmailVerificationSerializer(serializers.Serializer):
+    token = serializers.CharField(max_length=64)
+
+    def validate_token(self, value):
+        if not EmailVerificationToken.objects.filter(token=value).exists():
+            raise serializers.ValidationError("Invalid verification token")
+        return value

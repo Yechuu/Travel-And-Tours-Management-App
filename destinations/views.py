@@ -9,6 +9,10 @@ class DestinationListCreateView(generics.ListCreateAPIView):
     serializer_class = DestinationSerializer
     permission_classes = [IsAuthenticatedOrReadOnlyAgent | permissions.IsAdminUser]
 
+    def perform_create(self, serializer):
+        serializer.save(created_by=self.request.user)
+
+
 class DestinationRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Destination.objects.all()
     serializer_class = DestinationSerializer

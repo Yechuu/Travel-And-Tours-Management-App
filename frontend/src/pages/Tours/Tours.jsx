@@ -1,21 +1,27 @@
 import React, { useState,useEffect, useContext } from "react";
+import { PriceFilterProvider, usePriceFilter } from "../../contexts/PriceFilterContext";
 import Breadcrumbs from "../../components/Breadcrumbs/Breadcrumbs";
 import { Container, Row, Col, Offcanvas } from "react-bootstrap";
 import PopularCard from "../../components/Cards/PopularCard";
-import { popularsData } from "../../utils/data";
+// import { popularsData } from "../../utils/data";
 import Filters from "./Filters";
 import "../Tours/tour.css";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../../auth/AuthContext";
 import { useParams } from "react-router-dom";
+
+
 const Tours = () => {
   const [show, setShow] = useState(false);
   const { destinationId } = useParams();
+  const { isAuthenticated, accessToken, logout, refreshAuthToken } = useContext(AuthContext);
+  const { numericValue, filterType } = usePriceFilter();
+  const [filteredTours, setFilteredTours] = useState([]);
   
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
-    const { isAuthenticated, accessToken, logout, refreshAuthToken } = useContext(AuthContext);
-    const navigate = useNavigate();
+
+  const navigate = useNavigate();
   useEffect(() => {
     document.title = " Tours   ";
     window.scroll(0, 0);
@@ -58,13 +64,32 @@ const Tours = () => {
       ]);
       
       setInsideDestination(packages_inside_destination)
+      setFilteredTours(packages_inside_destination); // Initialize filtered tours with all data
+
     } catch (error) {
       console.error('Error fetching data:', error);
       alert(error)
       // logout(() => navigate('/login'));
     }
   };
-  
+  // useEffect(() => {
+  //   if (insideDestination.length > 0) {
+  //     const filtered = insideDestination.filter(tour => {
+  //       if (numericValue === Infinity) return tour.price > 400;
+  //       return tour.price <= numericValue;
+  //     });
+  //     setFilteredTours(filtered);
+  //   }
+  // }, [numericValue, insideDestination]);
+  useEffect(() => {
+    if (insideDestination.length > 0) {
+      const filtered = insideDestination.filter(tour => {
+        if (filterType === "above") return tour.price > numericValue;
+        return tour.price <= numericValue;
+      });
+      setFilteredTours(filtered);
+    }
+  }, [numericValue, filterType, insideDestination]);
   useEffect(() => {
     if (!isAuthenticated) {
       navigate('/login');
@@ -95,7 +120,7 @@ const Tours = () => {
             </Col>
             <Col xl="9" lg="8" md="12" sm="12">
               <Row>
-                {insideDestination.map((val, inx) => {
+                {filteredTours?.map((val, inx) => {
                   return (
                     <Col xl={4} lg={6} md={6} sm={6} className="mb-5" key={inx}>
                       <PopularCard val={val} />

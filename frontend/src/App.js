@@ -20,6 +20,10 @@ import AuthLayout from "./auth/AuthLayout";
 import CreateDestinationForm from "./pages/CreateDestinationForm/CreateDestinationForm";
 import CreatePackageForm from "./pages/CreatePackages/CreatePackages";
 import CreateItinerariesForm from "./pages/CreateItineraries/CreateItineraries";
+import EmailVerificationPage from "./pages/EmailVerificationPage/EmailVerificationPage"
+import ResendVerification from "./pages/ResendVerification/ResendVerification";
+import { PriceFilterProvider } from "./contexts/PriceFilterContext";
+import DeleteDestinationForm from "./pages/DeleteDestination/DeleteDestination"; 
 function App() {
   return (
     <AuthProvider>
@@ -29,20 +33,26 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="about-us" element={<About />} />
           <Route path="contact-us" element={<Contact />} />
-          <Route path="/tours/:destinationId" element={<Tours />} />
+          {/* <Route path="/tours/:destinationId" element={<Tours />} /> */}
           <Route path="/tour-details/:tourPackageId" element={<TourDetails />} />
+          <Route path="/tours/:destinationId" element={<PriceFilterProvider> <Tours /></PriceFilterProvider>}/>
           <Route path="/booking/:packageId" element={<Booking />} />
           <Route path="destinations" element={<Destinations />} />
           <Route path="gallery" element={<PhotoGallery />} />
           <Route path="add-destinations" element={< CreateDestinationForm/>} />
           <Route path="add-packages" element={<CreatePackageForm />} />
           <Route path="add-itineraries" element={<CreateItinerariesForm />} />
+          <Route path="delete" element={<DeleteDestinationForm />} />
+
         </Route>
 
         {/* Auth layout (no header) */}
         <Route element={<AuthLayout />}>
           <Route path="signup" element={<SignUp />} />
           <Route path="login" element={<Login />} />
+          <Route path="/verify-email/:token" element={<EmailVerificationPage />} />
+          <Route path="resend-verification" element={<ResendVerification />} />
+
         </Route>
       </Routes>
     </AuthProvider>

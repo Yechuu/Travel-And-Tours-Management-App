@@ -12,6 +12,8 @@ export default function CreateItinerariesForm() {
   const { isAuthenticated, accessToken, logout, refreshAuthToken } = useContext(AuthContext);
   const [selectedPackage, setSelectedPackage] = useState("")
   const [day_interval, setDayInterval] = useState(1)
+  const [message, setMessage] = useState('');
+const [error, setError] = useState('');
 
 
 
@@ -53,8 +55,7 @@ export default function CreateItinerariesForm() {
       setAllPackages(packages);
     } catch (error) {
       console.error('Error fetching data:', error);
-      alert(error)
-    }
+      setError('Error fetching packages. Please try again.');    }
   };
 
   useEffect(() => {
@@ -92,19 +93,24 @@ export default function CreateItinerariesForm() {
 
       
         if (response.ok) {
-          alert('Itinerary created successfully!');
-          navigate('/')
+          setMessage('Itinerary created successfully!');
+          setError('');
+
+          setSelectedPackage("")
+          setDayInterval(1)
+          
           setTitle('');
           setDescription('');
         //   setImage(null);
         } else {
         //   alert(response)
-          alert('Failed to create itinerary');
-        }
+        setError('Failed to create itinerary');
+        setMessage('');
+                }
       } catch (error) {
-        console.error('Error submitting form:', error);  // This will log the catch block errors
-        // alert('An error occurred');
-        alert(error)
+        setError('An unexpected error occurred');
+        setMessage('');
+        
       }
     }      
 
@@ -112,6 +118,8 @@ export default function CreateItinerariesForm() {
       <div className="login_container">
             <div className="login_wrapper">
               <h1 className="login_title">Add Itinerary</h1>
+              {message && <div className="success-message">{message}</div>}
+{error && <div className="error-message">{error}</div>}
           <form onSubmit={handleSubmit} className="login_form">
             {/* <h2>Login</h2> */}
             <input

@@ -107,6 +107,9 @@ const Header = () => {
                   <NavLink className="nav-link" to="/add-itineraries" onClick={closeMenu}>
                     Add Itineraries
                   </NavLink>
+                  <NavLink className="nav-link" to="/delete" onClick={closeMenu}>
+                    Delete
+                  </NavLink>
                    </> : <></>}
                    <div className="ms-md-4 ms-2">
               {/* <NavLink className="primaryBtn d-none d-sm-inline-block">

@@ -4,21 +4,28 @@ import os
 from decimal import Decimal
  
     
+from django.conf import settings
+
 class Destination(models.Model):
     name = models.CharField(max_length=255, unique=True, null=False, blank=False)
     description = models.TextField(null=False, blank=False)
     image = models.ImageField(upload_to="uploads", null=False, blank=False)
     created_at = models.DateTimeField(auto_now_add=True, null=False, blank=False)
     updated_at = models.DateTimeField(auto_now=True, null=False, blank=False)
+    created_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='destinations'
+    )
 
     def delete(self, *args, **kwargs):
-        if self.image:
-            if os.path.isfile(self.image.path):
-                os.remove(self.image.path)
+        if self.image and os.path.isfile(self.image.path):
+            os.remove(self.image.path)
         return super(Destination, self).delete(*args, **kwargs)
 
     def __str__(self):
         return self.name
+
     
 class Location(models.Model):
     name = models.CharField(max_length=255, null=False, blank=False)
