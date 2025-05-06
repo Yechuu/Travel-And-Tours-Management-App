@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import RegisterView, UserListView, UserRetrieveUpdateDestroyView, ProfileRetrieveUpdateDestroyView
+from .views import RegisterView, UserListView, UserRetrieveUpdateDestroyView, ProfileRetrieveUpdateDestroyView, VerifyEmailView, ResendVerificationView
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,
@@ -20,5 +20,7 @@ urlpatterns = [
     
     # Account owner
     path('profile/', ProfileRetrieveUpdateDestroyView.as_view(), name='profile-view'),
+    path('verify-email/', VerifyEmailView.as_view(), name='verify-email'),
+    path('resend-verification/', ResendVerificationView.as_view(), name='resend-verification'),
     
 ]

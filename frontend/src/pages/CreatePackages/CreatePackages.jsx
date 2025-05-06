@@ -19,6 +19,8 @@ export default function CreatePackageForm() {
   const [price, setPrice] = useState();
   const [afterDiscount, setAfterDiscount] = useState()
   const [tourInfo, setTourInfo] = useState("")
+  const [message, setMessage] = useState('');
+  const [error, setError] = useState('');
 
 
   const fetchWithAuth = async (url, options = {}) => {
@@ -75,42 +77,6 @@ export default function CreatePackageForm() {
     return null; // or loading spinner
   }
 
-  // const postWithAuth = async (url, formData) => {
-  //   let token = accessToken;
-    
-  //   const response = await fetch(url, {
-  //     method: 'POST',
-  //     headers: {
-  //       Authorization: `Bearer ${token}`,
-  //       // 'Content-Type' is automatically set by the browser when using FormData, so no need to set it manually
-  //     },
-  //     body: formData,
-  //   });
-  
-  //   if (response.status === 401) {
-  //     const newToken = await refreshAuthToken();
-  //     if (!newToken) throw new Error('Token refresh failed');
-    
-  //     const newResponse = await fetch(url, {
-  //       method: 'POST',
-  //       headers: {
-  //         Authorization: `Bearer ${newToken}`,
-  //       },
-  //       body: formData,
-  //     });
-      
-  //     return newResponse;  // return the response for the second attempt
-  //   }
-  
-  //   if (!response.ok) {
-  //     throw new Error(`HTTP error! status: ${response.status}`);
-  //   }
-  
-  //   return await response.json();
-  // };
-  
-
-  
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -140,19 +106,26 @@ export default function CreatePackageForm() {
 
       
         if (response.ok) {
-          alert('Package created successfully!');
-          navigate('/')
+          setMessage('Package created successfully!');
+          // Reset form fields
           setName('');
           setDescription('');
           setImage(null);
+          setOverview('');
+          setTourHighlights('');
+          setDuration('');
+          setAvailableDates('');
+          setPrice('');
+          setAfterDiscount('');
+          setSelectedDestination('');
+          setTourInfo('');
+    
         } else {
         //   alert(response)
-          alert('Failed to create package');
-        }
+        setError(response.detail || 'Failed to create package');        }
       } catch (error) {
-        console.error('Error submitting form:', error);  // This will log the catch block errors
-        // alert('An error occurred');
-        alert(error)
+        console.error('Error submitting form:', error);
+        setError('An unexpected error occurred. Please try again.');
       }
     }      
 
@@ -160,6 +133,8 @@ export default function CreatePackageForm() {
       <div className="login_container">
             <div className="login_wrapper">
               <h1 className="login_title">Add Package</h1>
+              {message && <div className="success-message">{message}</div>}
+{error && <div className="error-message ">{error}</div>}
           <form onSubmit={handleSubmit} className="login_form">
             {/* <h2>Login</h2> */}
             <input

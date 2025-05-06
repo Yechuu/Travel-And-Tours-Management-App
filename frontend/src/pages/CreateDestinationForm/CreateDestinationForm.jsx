@@ -9,6 +9,9 @@ export default function CreateDestinationForm() {
   const [description, setDescription] = useState('');
   const [image, setImage] = useState(null);
   const { isAuthenticated, accessToken, logout, refreshAuthToken } = useContext(AuthContext);
+  const [message, setMessage] = useState('');
+const [messageType, setMessageType] = useState(''); // 'success' or 'error'
+
   const navigate = useNavigate()
 
   const fetchWithAuth = async (url, options = {}) => {
@@ -53,17 +56,20 @@ export default function CreateDestinationForm() {
       });
 
       if (response.ok) {
-        alert('Destination created successfully!');
-        navigate('/')
+        setMessage('Destination created successfully!');
+        setMessageType('success');
+        // navigate('/');
         setName('');
         setDescription('');
         setImage(null);
       } else {
-        alert('Failed to create destination');
+        setMessage('Failed to create destination');
+        setMessageType('error');
       }
     } catch (error) {
-      console.error('Error submitting form:', error);
-      alert('An error occurred');
+      setMessage('An error occurred');
+      setMessageType('error');
+
     }
   };
 
@@ -71,6 +77,11 @@ export default function CreateDestinationForm() {
       <div className="login_container">
             <div className="login_wrapper">
               <h1 className="login_title">Add Destination</h1>
+              {message && (
+  <div className={`message ${messageType}`}>
+    {message}
+  </div>
+)}
           <form onSubmit={handleSubmit} className="login_form">
             {/* <h2>Login</h2> */}
             <input

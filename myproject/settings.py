@@ -195,6 +195,18 @@ SIMPLE_JWT = {
 
 AUTH_USER_MODEL = 'accounts.User'
 
+# Email Configuration
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'  # For production (SMTP)
+# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # For development (prints to console)
+
+EMAIL_HOST = 'smtp.gmail.com'  # SMTP server (e.g., Gmail, SendGrid)
+EMAIL_PORT = 587  # SMTP port (587 for TLS)
+EMAIL_USE_TLS = True  # Use TLS encryption
+EMAIL_HOST_USER = 'xyz'  # Sender email
+EMAIL_HOST_PASSWORD = 'xyz'  # Email password (or app password for Gmail)
+DEFAULT_FROM_EMAIL = 'xyz'  # Default sender email
+
+FRONTEND_URL='http://localhost:3000'
 # DATABASES = {
 #     'default': {
 #         'ENGINE': config('DB_ENGINE'),  # Read from the .env file

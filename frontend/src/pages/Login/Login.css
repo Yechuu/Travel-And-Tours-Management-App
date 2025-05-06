@@ -60,7 +60,15 @@
   cursor: pointer;
   margin-bottom: 10px;
 }
-
+.login_error {
+  color: #ff0000;
+  background-color: #ffebee;
+  padding: 10px;
+  border-radius: 4px;
+  margin-bottom: 15px;
+  text-align: center;
+  border: 1px solid #ffcdd2;
+}
 .login_link {
   margin: 5px 0;
   font-size: 12px;
